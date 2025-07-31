@@ -19,7 +19,9 @@
 3.  **Developer saves the files** into their project directory.
 4.  **Developer runs the Testing Agent** from the terminal:
     *   `claude-agent test test-login.spec.ts`
-5.  **The terminal displays real-time progress:**
+5.  **A browser window (Chromium) launches automatically.** The developer can watch in real-time as the Testing Agent executes the user flow described in the script—navigating pages, filling in forms, and clicking buttons. This provides immediate visual confirmation of the agent's actions.
+
+6.  **Simultaneously, the terminal displays real-time progress:**
     *   `[INFO] Starting Test Agent...`
     *   `[INFO] Executing test: test-login.spec.ts`
     *   `[INFO] Action: Navigating to page... DONE`
@@ -27,7 +29,7 @@
     *   `[INFO] Action: Filling password... DONE`
     *   `[INFO] Action: Clicking submit... DONE`
     *   `[SUCCESS] Test Passed. Artifacts saved to /runs/2025-07-31-22-30-00`
-6.  **Developer reports back to Claude:** "The test passed, the feature is working."
+7.  **Developer reports back to Claude:** "The test passed, the feature is working."
 
 ---
 

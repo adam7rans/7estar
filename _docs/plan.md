@@ -16,10 +16,11 @@ This plan is structured in phases for the development team.
 *   **Objective:** Build the foundational, non-agent script that can execute a Playwright test and save all artifacts.
 *   **Key Tasks:**
     1.  Create a TypeScript module that accepts a Playwright script path as an argument.
-    2.  Implement the logic to create a timestamped run directory.
-    3.  Implement the Playwright listeners for `console`, `request`, and `pageerror`.
-    4.  Implement the logic to save screenshots before and after each action.
-    5.  Implement the final trace file generation.
+    2.  Configure the Playwright launcher within the module to start the browser in **headed mode** by default, making the process visible to the developer.
+    3.  Implement the logic to create a timestamped run directory.
+    4.  Implement the Playwright listeners for `console`, `request`, and `pageerror`.
+    5.  Implement the logic to save screenshots before and after each action.
+    6.  Implement the final trace file generation.
 *   **Success Criteria:** A developer can run `npm run execute-test ./tests/example.spec.ts` and see a complete artifact directory created in `/runs`.
 
 ## Phase 2: Agent Definition & Basic Tooling

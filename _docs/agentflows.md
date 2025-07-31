@@ -12,7 +12,7 @@
     *   `SET current_run_id = "YYYY-MM-DD-HH-MM-SS".`
 4.  **AGENT starts the Playwright MCP session:**
     *   `INITIATE connection to the Playwright MCP server.`
-    *   `CREATE new browser context.`
+    *   `CREATE new browser context in **headed mode** to ensure the developer can visually monitor the test.`
 5.  **AGENT sets up data capture listeners:**
     *   `ATTACH listener for console events ('page.on('console')').`
         *   `ON console event:`

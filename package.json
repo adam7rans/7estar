@@ -1,0 +1,29 @@
+{
+  "name": "testing-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "execute-test": "node --loader ts-node/esm src/index.ts test",
+    "agent": "node --loader ts-node/esm src/index.ts agent",
+    "mcp": "node --loader ts-node/esm src/mcp.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.58.0",
+    "@modelcontextprotocol/sdk": "1.17.2",
+    "@types/express": "^5.0.3",
+    "express": "^5.1.0",
+    "playwright": "^1.45.0",
+    "yargs": "^17.7.2",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/yargs": "^17.0.32",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}

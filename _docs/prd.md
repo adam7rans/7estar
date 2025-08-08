@@ -23,14 +23,15 @@ The **Testing Agent** is a new software tool designed to automate this entire fe
     *   **Visual Documentation:** It will automatically take screenshots before and after every key interaction.
     *   **Console & Network Monitoring:** The agent will capture browser console logs and network tab activity.
     *   **DOM Inspection:** The agent can inspect DOM elements to verify CSS properties when requested.
-*   **Intelligent, On-Demand Reporting:**
-    *   **Natural Language Understanding:** The agent will leverage Claude's native ability to understand natural language requests from the primary AI session (e.g., "show me the console log").
-    *   **Context-Aware Tool Calling:** The agent will translate these requests into specific tool calls to retrieve the correct piece of data from its recorded logs (e.g., `tool_get_console_logs({ filter: 'error' })`).
-    *   **Selective Feedback:** By default, the agent will only provide data explicitly requested by the AI, but it will also proactively flag critical errors found in the console logs.
+*   **Autonomous, On-Demand Reporting:**
+    *   **Session Orchestration:** When a test starts, the agent opens or joins a Claude Code conversation and maintains it for the test lifecycle.
+    *   **Automatic Post-Run Summary:** After execution, the agent posts a concise summary (status, `run_id`, artifact index) directly to Claude—no developer mediation.
+    *   **NLU-Driven Tool Calls (No Copy/Paste):** Claude requests specifics in natural language (e.g., "console errors", "screenshot after submit"); the agent automatically fulfills these via tool calls and sends only the requested artifacts back into the same conversation.
+    *   **Selective & Proactive:** The agent responds with minimal, relevant data and proactively surfaces critical console errors by default.
 
 ## 4. Technical Specification
 *   **Core Framework:** The application will be built using the **Claude Code SDK (TypeScript)**, running as a Node.js process.
-*   **Agent Definition:** A custom "Testing Agent" will be defined using YAML frontmatter, specifying its system prompt, capabilities, and a restricted set of tools.
+*   **Agent Definition:** A custom "Testing Agent" will be defined using YAML frontmatter, specifying its system prompt, capabilities, a restricted set of tools, and conversation/session wiring to Claude Code.
 *   **Browser Automation & Data Capture:**
     *   **Playwright & Playwright MCP:** The agent will interface with a browser via the **Playwright MCP (Model Context Protocol) server**. This provides the "hands and eyes" for the agent, enabling it to:
         *   Run automation scripts.
@@ -38,6 +39,7 @@ The **Testing Agent** is a new software tool designed to automate this entire fe
         *   Capture console events, network requests, and screenshots.
         *   Generate a comprehensive trace file for each test run.
 *   **Agent Logic & Tooling:**
-    *   **Test Executor Tool:** A primary tool function (`run_test(script_path)`) will manage the execution of a Playwright script and orchestrate the data capture.
-    *   **Data Retrieval Tools:** A suite of tool functions (`get_screenshot`, `get_console_logs`, `get_network_activity`) will be defined in TypeScript. These functions will access the stored artifacts from a completed test run and return filtered, structured data to the agent.
-    *   **Data Storage:** For each test run, the agent will create a time-stamped directory containing all artifacts: screenshots (named by action), a JSON log of all interactions, a console log file, a network log file, and the Playwright trace file.
+    *   **Test Executor Tool:** A primary tool function (`run_test(script_path)`) manages Playwright execution in headed mode and orchestrates artifact capture.
+    *   **Data Retrieval Tools:** A suite of tool functions (`get_artifact` with `type: screenshot|console|network`, and filters) returns only the requested artifacts from the run directory.
+    *   **Autonomous Bridge:** An agent runtime component posts the post-run summary and automatically serves Claude’s follow-up requests via tool calls—no human copy/paste.
+    *   **Data Storage:** For each test run, the agent creates a time-stamped directory containing all artifacts: screenshots (named by action/timing), `actions.json`, `console.log`, `network.log`, and the Playwright trace file.

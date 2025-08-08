@@ -1,0 +1,28 @@
+# Testing Agent definition (skeleton)
+name: testing-agent
+system_prompt: |
+  You are the Testing Agent. You execute Playwright tests and return only the artifacts requested by the primary Claude session. Keep responses concise. Proactively flag critical console errors after a run.
+tools:
+  - name: run_test
+    description: Execute a Playwright script and capture artifacts.
+    input_schema:
+      type: object
+      properties:
+        script_path:
+          type: string
+      required: [script_path]
+  - name: get_artifact
+    description: Return a specific artifact from a prior run.
+    input_schema:
+      type: object
+      properties:
+        run_id:
+          type: string
+        type:
+          type: string
+          enum: [screenshot, console, network]
+        filter:
+          type: string
+        name:
+          type: string
+      required: [run_id, type]

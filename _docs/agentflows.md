@@ -44,8 +44,8 @@
 
 ## Flow 2: Artifact Retrieval (`get_artifact` tool)
 
-1.  **AGENT is activated via a prompt from the main Claude session** (e.g., "show me the console log").
-2.  **Claude's NLU determines the user wants a specific tool** and calls `get_artifact` with parsed parameters (e.g., `{ run_id: "...", type: "console", filter: "error" }`).
+1.  **AGENT receives a tool call routed from the active Claude conversation** (e.g., "show me the console log"). No developer action is required.
+2.  **Claude's NLU determines the user intent and selects the tool**, calling `get_artifact` with parsed parameters (e.g., `{ run_id: "...", type: "console", filter: "error" }`).
 3.  **AGENT validates the `run_id`:**
     *   `IF run directory for run_id does not exist THEN`
         *   `RETURN Error: "Test run not found."`
@@ -69,4 +69,15 @@
         *   `(Similar logic as console, reading network.log and applying filters).`
     *   **DEFAULT:**
         *   `RETURN Error: "Invalid artifact type requested."`
-5.  **The returned data is passed back into the main Claude conversation context.**
+5.  **AGENT returns the requested data directly to the same Claude conversation**, keeping messages concise and focused (filtered logs, specific screenshots). No copy/paste by the developer.
+
+---
+
+## Flow 3: Conversation Orchestration (Autonomous)
+
+1. **AGENT opens or attaches to a Claude conversation** when a test run begins.
+2. **During test execution**, AGENT may stream minimal progress updates (optional) while capturing artifacts.
+3. **After test completion**, AGENT posts a concise summary (status, `run_id`, artifact index) and proactively flags critical console errors.
+4. **Claude requests specifics in natural language**, which are routed as tool calls back to the AGENT.
+5. **AGENT fulfills requests via `get_artifact`**, returning only the requested artifacts (e.g., filtered console errors, screenshots before/after a named action).
+6. **Optionally, AGENT offers to re-run the test** after Claude proposes a fix, continuing the loop until PASS.

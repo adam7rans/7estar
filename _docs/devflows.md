@@ -29,11 +29,11 @@
     *   `[INFO] Action: Filling password... DONE`
     *   `[INFO] Action: Clicking submit... DONE`
     *   `[SUCCESS] Test Passed. Artifacts saved to /runs/2025-07-31-22-30-00`
-7.  **Developer reports back to Claude:** "The test passed, the feature is working."
+7.  **Agent posts to Claude automatically:** The Testing Agent posts a PASS summary (status, `run_id`) directly into the active Claude conversation. No developer message required.
 
 ---
 
-## Flow 3: The Debugging Loop (Test Fails)
+## Flow 3: The Debugging Loop (Test Fails, Automated)
 
 1.  **Developer follows steps 1-4 from Flow 2.**
 2.  **The Testing Agent runs the test, but an assertion fails.**
@@ -42,17 +42,21 @@
     *   `[INFO] Action: Clicking submit... DONE`
     *   `[ERROR] Assertion Failed: Expected element '#dashboard' to be visible.`
     *   `[FAIL] Test Failed. Artifacts saved to /runs/2025-07-31-22-35-15`
-4.  **Developer informs the primary AI:** "I ran the test, but it failed."
-5.  **Claude responds:** "I see. Please provide the console log for any errors and a screenshot of the page after the submit button was clicked."
-6.  **Developer now queries the Testing Agent** for the specific artifacts. (This step can also be automated where the agent listens to the conversation).
-    *   `claude-agent get-artifact --run 2025-07-31-22-35-15 --type console --filter error`
-    *   `claude-agent get-artifact --run 2025-07-31-22-35-15 --type screenshot --name after_click_submit`
-7.  **The agent retrieves the requested information** and prints it to the console or saves it to a file.
-8.  **Developer copies this information** and provides it to the primary AI assistant.
-9.  **Claude analyzes the data and provides a code fix.**
-10. **IF Claude's fix is correct THEN:**
-    *   Developer applies the fix and re-runs the test (`claude-agent test test-login.spec.ts`).
-    *   The test now passes, and the developer proceeds as in Flow 2.
-11. **ELSE (IF Claude's fix is wrong):**
+4.  **Agent posts a FAIL summary to Claude automatically** (status, `run_id`, artifact index, proactive critical console errors).
+5.  **Claude requests specific artifacts in natural language** (e.g., console errors, after-click screenshot). The request is routed as a tool call directly to the Testing Agent.
+6.  **The agent retrieves and returns only the requested artifacts** directly into the Claude conversation (no developer copy/paste).
+7.  **Claude analyzes the data and provides a code fix.**
+8.  **IF Claude's fix is correct THEN:**
+    *   Developer applies the fix and re-runs the test (`claude-agent test test-login.spec.ts`) or instructs the agent to re-run if supported.
+    *   The test now passes, and the agent posts a PASS summary as in Flow 2.
+9.  **ELSE (IF Claude's fix is wrong):**
     *   The test fails again.
-    *   The developer repeats the debugging loop from step 4.
+    *   The agent repeats the automated loop starting from step 4.
+
+---
+
+## Flow 4: Optional Agent-Initiated Re-Run
+
+1. **Claude proposes a code fix.**
+2. **Agent offers to re-run the test automatically** after the fix is applied (configurable).
+3. **Upon confirmation**, the agent re-runs and follows Flow 2 or Flow 3 accordingly.

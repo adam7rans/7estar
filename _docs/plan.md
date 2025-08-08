@@ -30,17 +30,20 @@ This plan is structured in phases for the development team.
     2.  Define the first tool in the YAML file: `run_test`.
     3.  Create a TypeScript file (`src/tools.ts`) to house the tool functions.
     4.  Wrap the logic from Phase 1 into a `run_test(script_path)` function in `src/tools.ts`.
-    5.  Create a simple CLI entry point (`src/index.ts`) that uses the Claude Code SDK to invoke the agent and its `run_test` tool.
-*   **Success Criteria:** A developer can run `claude-agent test ./tests/example.spec.ts`, which now uses the agent to trigger the test execution engine from Phase 1.
+    5.  Create a simple CLI entry point (`src/index.ts`) that uses the Claude Code SDK to invoke the agent and its `run_test` tool and open/attach to a Claude session.
+*   **Success Criteria:** A developer can run `claude-agent test ./tests/example.spec.ts`, which uses the agent to trigger the test execution engine from Phase 1 and establish a Claude conversation for reporting.
 
-## Phase 3: Interactive Artifact Retrieval
-*   **Objective:** Build the tools and logic for the agent to retrieve and return data from a completed test run.
+## Phase 3: Interactive Artifact Retrieval (Autonomous)
+*   **Objective:** Build the tools and conversation wiring for the agent to autonomously retrieve and deliver artifacts to Claude without human copy/paste.
 *   **Key Tasks:**
-    1.  Define the `get_artifact` tool in `testing-agent.yml` with parameters for `run_id`, `type`, and `filter`.
-    2.  Implement the `get_artifact` function in `src/tools.ts`. This function will contain the logic to read files from the specified run directory.
-    3.  Implement the filtering logic for console and network logs.
-    4.  Enhance the CLI to support this new command (e.g., `claude-agent get-artifact ...`).
-*   **Success Criteria:** After a test fails, the developer can successfully use the CLI to ask the agent for the error logs and specific screenshots from that run.
+    1.  Define the `get_artifact` tool in `testing-agent.yml` with parameters for `run_id`, `type`, `filter?`, and `name?`.
+    2.  Implement the `get_artifact` function in `src/tools.ts` to read and filter data from the run directory (screenshots, console, network).
+    3.  Implement an agent runtime (`src/agent.ts`) that:
+        - Posts a post-run summary (status, `run_id`, artifact index) to the Claude conversation.
+        - Listens for Claude’s natural-language requests which are routed as tool calls, and responds with only the requested artifacts.
+        - Proactively surfaces critical console errors after the run.
+    4.  Keep a small CLI wrapper to start/stop sessions; avoid requiring the developer to fetch artifacts manually.
+*   **Success Criteria:** After a test completes, Claude can request artifacts in natural language and the agent automatically returns only those items within the same conversation (no manual copy/paste).
 
 ## Phase 4: Integrating with Playwright MCP
 *   **Objective:** Refactor the test execution engine to be driven by the agent through the Playwright MCP server, enabling more dynamic and interactive control.
